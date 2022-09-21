@@ -66,6 +66,9 @@ class Cart extends ProductList {
     //очистить всю корзину
     cleanAllCart() {}
 
+    //получить количество товаров в корзине
+    getCountElemtCart() {}
+
 }
 
 
