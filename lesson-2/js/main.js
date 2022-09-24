@@ -69,6 +69,8 @@ class Cart extends ProductList {
     //получить количество товаров в корзине
     getCountElemtCart() {}
 
+    renrder() {}
+
 }
 
 
@@ -86,6 +88,8 @@ class ProductCart extends ProductItem{
 
     //изменение колчества одной позиции
     changeCountItem(){}
+
+    render() {}
 }
 
 let list = new ProductList();
