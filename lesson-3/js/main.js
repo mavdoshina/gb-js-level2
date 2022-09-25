@@ -48,10 +48,8 @@ class ProductsList {
     }
     render(){
         const block = document.querySelector(this.container);
-        console.log(this.goods);
         for (let product of this.goods){
             const productObj = new ProductItem(product);
-//            this.allProducts.push(productObj);
             block.insertAdjacentHTML('beforeend', productObj.render());
         }
 
@@ -67,7 +65,6 @@ class ProductItem {
         this.img = img;
     }
     render(){
-        console.log('ggg');
         return `<div class="product-item" data-id="${this.id_product}" data-item=${JSON.stringify(this)}>
                 <img src="${this.img}" alt="Some img">
                 <div class="desc">
@@ -107,32 +104,27 @@ class Basket {
 
     //добавление в корзину
     addItemCart(item) {
-        const indexElem = this.goods.findIndex(elem => elem.id_product === item.id_product);
+        let indexElem = this.goods.findIndex(elem => elem.id_product === item.id_product);
         if(indexElem < 0) {
             item.quantity = 1;
             this.goods.push(item);
-            this.renderUpdate(item);
+            console.log(this.goods.length - 1);
+            indexElem = this.goods.length - 1;
         } else {
             this.goods[indexElem].quantity++
         }
 
-        console.log(this.goods);
-    
-        // cartTotalEl.innerHTML = getTotalAll();
-        // if(!cartCount) {
-        //     const spanEl = document.createElement('span');
-        //     spanEl.classList.add('basket-count');
-        //     spanEl.innerHTML = getCountElemtCart();
-        //     cartSmallEl.append(spanEl);
-        // } else {
-        //     cartCount.innerHTML = getCountElemtCart();
-        // }
-        
-        // productRender(id);
+        this.renderUpdate(indexElem);
     }
 
     //удаление элемента из корзины
-    deleteItemCart() {}
+    deleteItemCart(idElem) {
+        const indexElem = this.goods.findIndex(elem => elem.id_product === idElem);
+        console.log(idElem);
+        this.goods[indexElem].quantity--;
+
+        this.renderUpdate(indexElem);
+    }
 
     //изменение количества товаров в корзине
     changeCountCart(){}
@@ -143,29 +135,31 @@ class Basket {
     //получить количество товаров в корзине
     getCountElemtCart() {}
 
-    renderUpdate(item) {
-        const basketItem = document.querySelector(`this.container [data-id = "${item.id_product}"]`);
-        console.log(basketItem);
-        const block = document.querySelector(this.container);
+    renderUpdate(indexElem) {
+        const basketItem = document.querySelector(`${this.container} [data-id = "${this.goods[indexElem].id_product}"]`);
 
-        const basketProduct = new ProductBasket(item);
-        basketProduct.summItemCart();
+        if(this.goods[indexElem].quantity === 0) {
+            basketItem.remove();
+        } else {
+        
+            const block = document.querySelector(this.container);
 
-        if(!basketItem) {
-            block.insertAdjacentHTML('beforeend', basketProduct.render());
-            return;
+            const basketProduct = new ProductBasket(this.goods[indexElem]);
+            basketProduct.summItemCart();
+
+            if(!basketItem) {
+                block.insertAdjacentHTML('beforeend', basketProduct.render());
+                return;
+            } else {
+                basketItem.querySelector('.product-item__quantity span').innerHTML = basketProduct.quantity;
+
+                basketItem.querySelector('.product-item-summ span').innerHTML = basketProduct.summ;
+            }
         }
-    
-        // cartItem.querySelector('.cart-item__count')
-        //     .textContent = products[id].count;
-    
-        // cartItem.querySelector('.cart-item__price-all')
-        //     .textContent = getSummCartItem(id);
     }
 
     render() {
         const block = document.querySelector(this.container);
-        console.log(this.goods);
         for (let product of this.goods){
             const productObj = new ProductBasket(product);
             productObj.summItemCart();
@@ -194,18 +188,17 @@ class ProductBasket extends ProductItem{
     changeCountItem(){}
 
     render() {
-        console.log(JSON.stringify(this));
         return `<div class="product-item" data-id="${this.id_product}">
                     <div class="product-item-info">
                         <img src="${this.img}" alt="${this.product_name}">
                         <div class="desc">
                             <div class="name">${this.product_name}</div>
-                            <div class="small">Quantity: ${this.quantity}</div>
-                            <div class="small">${this.price} $</div>
+                            <div class="small product-item__quantity">Quantity: <span>${this.quantity}</span></div>
+                            <div class="small product-item__price">${this.price} $</div>
                         </div>
                     </div>
                     <div class="product-item-summ-info">
-                        <div class="product-item-summ">${this.summ} $</div>
+                        <div class="product-item-summ"><span>${this.summ}</span> $</div>
                         <button class="product-item-close">X</button>
                     </div>
             </div>`
@@ -225,10 +218,20 @@ btnBasket.addEventListener('click', () => areaBasket.classList.toggle('active'))
 
 const productsEl = document.querySelector('.products');
 productsEl.addEventListener('click', event => {
-
     if(event.target.classList.contains('buy-btn')) {
         const parent = event.target.closest('.product-item');
         const basketItem = new ProductBasket(JSON.parse(parent.dataset.item));
         basket.addItemCart(JSON.parse(parent.dataset.item));
+    }
+});
+
+
+const basketEl = document.querySelector('.basket-area');
+basketEl.addEventListener('click', event => {
+    if(event.target.classList.contains('product-item-close')) {
+        const parent = event.target.closest('.product-item');
+        basket.deleteItemCart(+parent.dataset.id);
+        // const basketItem = new ProductBasket(JSON.parse(parent.dataset.item));
+        // basket.addItemCart(JSON.parse(parent.dataset.item));
     }
 })

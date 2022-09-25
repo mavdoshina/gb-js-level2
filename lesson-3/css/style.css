@@ -81,7 +81,6 @@ img {
     top: 85px;
     right: 20px;
     background: #fff;
-    padding: 10px;
     display: none;
 }
 
@@ -95,11 +94,15 @@ img {
     flex-direction: row;
     align-items: center;
     width: auto;
-    padding: 10px 5px;
+    padding: 10px 15px;
     margin: 5px 0;
     border-bottom: 1px solid #eee;
     border-radius: 0;
     justify-content: space-between;
+}
+
+.basket-area .product-item:last-child {
+    border-bottom: none;
 }
 
 
@@ -131,6 +134,7 @@ img {
     box-shadow: none;
     border: none;
     color: #fff;
+    cursor: pointer;
 }
 
 .basket-area  .product-item-info .small {
