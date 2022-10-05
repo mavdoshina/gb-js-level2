@@ -25,7 +25,26 @@ const app = new Vue({
                 })
         },
         addProduct(product){
-                console.log(product.id_product);
+            this.getJson(`${API}/addToBasket.json`)
+                .then(data => {
+                    if(data.result === 1){
+                        let productId = +product.id_product;
+                        let find = this.cartItems.find(item => item.id_product === productId);
+                        if(find){
+                            find.quantity++;
+                        } else {
+                            let element = {
+                                id_product: productId,
+                                price: +product.price,
+                                product_name: product.name,
+                                quantity: 1
+                            };
+                            this.cartItems.push(element);
+                        }
+                    } else {
+                        alert('Error');
+                    }
+                })
         }
     },
     mounted(){
